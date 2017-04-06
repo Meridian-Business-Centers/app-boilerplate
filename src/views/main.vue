@@ -1,6 +1,5 @@
 <template>
-    <sample-view>
-    </sample-view>
+    <div>Current health check: {{health}}</div>
 </template>
 
 <script>
@@ -11,6 +10,7 @@ export default {
     props: [''],
     data: function () {
         return {
+            health: ''
         };
     },
     computed: {},
@@ -19,7 +19,12 @@ export default {
     beforeCreate: function () { },
     created: function () { },
     beforeMount: function () { },
-    mounted: function () { },
+    mounted: async function () {
+
+        this.health = (await this.$http.get('/health')).data;
+
+
+    },
     beforeUpdate: function () { },
     updated: function () { },
     beforeDestroy: function () { },

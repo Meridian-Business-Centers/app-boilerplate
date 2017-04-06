@@ -8,24 +8,26 @@ const io = require('socket.io')(server);
 const path = require('path');
 const _ = require('lodash');
 const history = require('connect-history-api-fallback');
+const utility = require('./ulility');
+const db = require('./db');
+
+app.get('/health', async function (req, res){
+    try {
+        res.send({
+            status: 'ok',
+            date: await db.row(`select now()`)
+        });
+    } catch (err) {
+        console.error(err);
+    }
+});
+
 
 app.use(compression());
 app.use(history());
 app.use(express.static(path.join(__dirname, '../', 'public')));
 app.use('/dist/', express.static(path.join(__dirname, '../', 'dist')));
 
-let tenantOverride = {
-    'artcraft': 'artcraft.epicdata.io',
-    'devartcraft': 'devartcraft.epicdata.io'
-}
-
-app.get('/org-host/:orgId', (req, res) => {
-    let lookup = (req.params.orgId || '').toLowerCase();
-    res.send({
-        host: _.result(tenantOverride, lookup, 'api.swsb.io'),
-        'org_id': lookup
-    });
-});
-
+module.exports.app = app;
 module.exports.server = server;
 module.exports.io = io;
